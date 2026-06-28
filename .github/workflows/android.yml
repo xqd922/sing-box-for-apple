@@ -1,0 +1,233 @@
+name: Build Android
+
+on:
+  push:
+    branches: [ main, develop, feature/android-port ]
+    tags: [ 'v*' ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        java-version: ['17']
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up JDK ${{ matrix.java-version }}
+      uses: actions/setup-java@v4
+      with:
+        java-version: ${{ matrix.java-version }}
+        distribution: 'temurin'
+
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v3
+
+    - name: Cache Gradle packages
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
+
+    - name: Grant execute permission for gradlew
+      run: chmod +x sing-box-android/gradlew
+
+    - name: Build Debug APK
+      run: cd sing-box-android && ./gradlew assembleDebug
+
+    - name: Run Tests
+      run: cd sing-box-android && ./gradlew test
+
+    - name: Upload Debug APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: debug-apk
+        path: sing-box-android/app/build/outputs/apk/debug/*.apk
+        retention-days: 7
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+
+    permissions:
+      contents: write
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v3
+
+    - name: Cache Gradle packages
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
+
+    - name: Grant execute permission for gradlew
+      run: chmod +x sing-box-android/gradlew
+
+    - name: Build Release APK (unsigned)
+      run: cd sing-box-android && ./gradlew assembleRelease
+
+    - name: Build Release AAB
+      run: cd sing-box-android && ./gradlew bundleRelease
+
+    - name: Get version from tag
+      id: get_version
+      run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+
+    - name: Create Release
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: ${{ github.ref_name }}
+        name: sing-box for Android ${{ steps.get_version.outputs.VERSION }}
+        body: |
+          ## sing-box for Android ${{ steps.get_version.outputs.VERSION }}
+
+          ### 🎉 Initial Release
+
+          Complete Android port of sing-box iOS/macOS client with identical UI and functionality.
+
+          ### 📱 Installation
+
+          **Option 1: Download APK**
+          1. Download the APK file below
+          2. Enable "Install from unknown sources" in Android settings
+          3. Install the APK
+
+          **Option 2: Build from Source**
+          ```bash
+          git clone https://github.com/xqd922/sing-box-for-apple.git
+          cd sing-box-for-apple
+          git checkout feature/android-port
+          cd sing-box-android
+          ./build_libbox.sh
+          ./build_release.sh
+          ```
+
+          ### 🚀 Quick Start
+
+          1. Open the app
+          2. Grant VPN permissions when prompted
+          3. Import a sing-box configuration file (.json)
+          4. Tap the play button to start
+
+          ### ✨ Features
+
+          **UI Components (100% iOS Replica)**
+          - 📊 Dashboard with status, profile, connections, traffic cards
+          - 📝 Logs with search, filtering, and export
+          - 🔧 Tools with network diagnostics
+          - ⚙️ Settings with all configuration options
+          - 🎨 iOS color system and typography
+          - ✨ Smooth animations and transitions
+
+          **Core Features**
+          - 🔒 VPN service with Libbox integration
+          - 📱 Quick Settings Tile support
+          - 🚀 Boot auto-start support
+          - 📊 Real-time traffic monitoring
+          - 🔍 Connection management
+
+          **Architecture**
+          - 🏗️ MVVM with Hilt dependency injection
+          - 💾 Room database for profile management
+          - 🔄 Kotlin Coroutines + Flow
+          - 📦 Multi-module architecture
+
+          ### 📋 Requirements
+
+          - Android 8.0 (API 26) or later
+          - VPN permissions
+          - sing-box configuration file
+
+          ### 📖 Documentation
+
+          - [README](README.md) - Project overview
+          - [BUILD_LIBBOX](BUILD_LIBBOX.md) - How to build Libbox
+          - [RELEASE_GUIDE](RELEASE_GUIDE.md) - How to release
+          - [CHANGELOG](CHANGELOG.md) - Version history
+
+          ### ⚠️ Important Notes
+
+          **This is an unsigned release.** You need to enable "Install from unknown sources" to install it.
+
+          For signed releases, configure the signing secrets in your repository settings:
+          - `KEYSTORE_BASE64` - Base64 encoded keystore file
+          - `KEYSTORE_PASSWORD` - Keystore password
+          - `KEY_ALIAS` - Key alias
+          - `KEY_PASSWORD` - Key password
+
+          ### 🗺️ Roadmap
+
+          - [ ] QR code scanner for profile import
+          - [ ] Per-app proxy configuration
+          - [ ] Widget support
+          - [ ] Multi-language support
+          - [ ] Tablet optimization
+          - [ ] Play Store release
+
+          ### 🐛 Known Issues
+
+          - Libbox integration requires building from source
+          - Some advanced features may need additional testing
+
+          ### 🙏 Acknowledgments
+
+          - [sing-box](https://github.com/SagerNet/sing-box) - The universal proxy platform
+          - [sing-box-for-apple](https://github.com/nekohasekai/sing-box-for-apple) - iOS/macOS client
+          - [Jetpack Compose](https://developer.android.com/jetpack/compose) - Modern UI toolkit
+          - [Material Design 3](https://m3.material.io/) - Design system
+
+          ### 📄 License
+
+          This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](LICENSE) file for details.
+
+          ---
+
+          **Note**: This is an experimental client. Use at your own risk.
+
+          For issues and feedback, please open an issue on GitHub.
+        files: |
+          sing-box-android/app/build/outputs/apk/release/*.apk
+          sing-box-android/app/build/outputs/bundle/release/*.aab
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Upload Release APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: release-apk-${{ steps.get_version.outputs.VERSION }}
+        path: sing-box-android/app/build/outputs/apk/release/*.apk
+        retention-days: 30
+
+    - name: Upload Release AAB
+      uses: actions/upload-artifact@v4
+      with:
+        name: release-aab-${{ steps.get_version.outputs.VERSION }}
+        path: sing-box-android/app/build/outputs/bundle/release/*.aab
+        retention-days: 30
