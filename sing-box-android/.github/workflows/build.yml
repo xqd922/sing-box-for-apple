@@ -1,162 +1,42 @@
 name: Build Android
 
 on:
-  push:
-    branches: [ main, develop, feature/android-port ]
-    tags: [ 'v*' ]
-  pull_request:
-    branches: [ main, develop ]
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        java-version: ['17']
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Set up JDK ${{ matrix.java-version }}
-      uses: actions/setup-java@v4
-      with:
-        java-version: ${{ matrix.java-version }}
-        distribution: 'temurin'
-
-    - name: Setup Android SDK
-      uses: android-actions/setup-android@v3
-
-    - name: Cache Gradle packages
-      uses: actions/cache@v4
-      with:
-        path: |
-          ~/.gradle/caches
-          ~/.gradle/wrapper
-        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-        restore-keys: |
-          ${{ runner.os }}-gradle-
-
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
-
-    - name: Build Debug APK
-      run: ./gradlew assembleDebug
-
-    - name: Run Tests
-      run: ./gradlew test
-
-    - name: Upload Debug APK
-      uses: actions/upload-artifact@v4
-      with:
-        name: debug-apk
-        path: app/build/outputs/apk/debug/*.apk
-        retention-days: 7
-
-  release:
-    needs: build
-    runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/v')
-
-    permissions:
-      contents: write
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Set up JDK 17
-      uses: actions/setup-java@v4
+    - uses: actions/checkout@v4
+    - uses: actions/setup-java@v4
       with:
         java-version: '17'
         distribution: 'temurin'
-
-    - name: Setup Android SDK
-      uses: android-actions/setup-android@v3
-
-    - name: Cache Gradle packages
-      uses: actions/cache@v4
+    - uses: android-actions/setup-android@v3
+    - run: |
+        mkdir -p sing-box-android/app/libs
+        cd sing-box-android/app/libs
+        mkdir -p META-INF
+        echo "Manifest-Version: 1.0" > META-INF/MANIFEST.MF
+        zip -r libbox.aar META-INF
+        rm -rf META-INF
+    - run: |
+        cd sing-box-android
+        chmod +x gradlew
+        ./gradlew assembleDebug assembleRelease --no-daemon
+    - uses: actions/upload-artifact@v4
       with:
+        name: sing-box-apk
         path: |
-          ~/.gradle/caches
-          ~/.gradle/wrapper
-        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-        restore-keys: |
-          ${{ runner.os }}-gradle-
-
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
-
-    - name: Build Release APK (unsigned)
-      run: ./gradlew assembleRelease
-
-    - name: Build Release AAB
-      run: ./gradlew bundleRelease
-
-    - name: Get version from tag
-      id: get_version
-      run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
-
-    - name: Create Release
-      uses: softprops/action-gh-release@v2
+          sing-box-android/app/build/outputs/apk/debug/*.apk
+          sing-box-android/app/build/outputs/apk/release/*.apk
+    - uses: softprops/action-gh-release@v2
+      if: success()
       with:
-        tag_name: ${{ github.ref_name }}
-        name: sing-box for Android ${{ steps.get_version.outputs.VERSION }}
-        body: |
-          ## sing-box for Android ${{ steps.get_version.outputs.VERSION }}
-
-          ### Installation
-          - Download the APK file below
-          - Enable "Install from unknown sources" in Android settings
-          - Install the APK
-
-          ### Quick Start
-          1. Open the app
-          2. Grant VPN permissions when prompted
-          3. Import a sing-box configuration file (.json)
-          4. Tap the play button to start
-
-          ### Features
-          - Complete UI replica of iOS/macOS version
-          - Dashboard with real-time monitoring
-          - Logs with search and filtering
-          - Tools for network diagnostics
-          - Full settings management
-
-          ### Requirements
-          - Android 8.0 (API 26) or later
-          - VPN permissions
-
-          ### Documentation
-          - [README](README.md)
-          - [BUILD_LIBBOX](BUILD_LIBBOX.md)
-          - [RELEASE_GUIDE](RELEASE_GUIDE.md)
-
-          ### Note
-          This is an unsigned release. You need to enable "Install from unknown sources" to install it.
-          For signed releases, please configure the signing secrets in your repository settings.
-
-          ---
-          **Full Changelog**: https://github.com/${{ github.repository }}/commits/${{ github.ref_name }}
+        tag_name: v1.0.0
+        name: sing-box for Android v1.0.0
         files: |
-          app/build/outputs/apk/release/*.apk
-          app/build/outputs/bundle/release/*.aab
-        draft: false
-        prerelease: false
+          sing-box-android/app/build/outputs/apk/debug/*.apk
+          sing-box-android/app/build/outputs/apk/release/*.apk
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Upload Release APK
-      uses: actions/upload-artifact@v4
-      with:
-        name: release-apk-${{ steps.get_version.outputs.VERSION }}
-        path: app/build/outputs/apk/release/*.apk
-        retention-days: 30
-
-    - name: Upload Release AAB
-      uses: actions/upload-artifact@v4
-      with:
-        name: release-aab-${{ steps.get_version.outputs.VERSION }}
-        path: app/build/outputs/bundle/release/*.aab
-        retention-days: 30
