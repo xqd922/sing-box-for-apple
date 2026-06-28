@@ -13,34 +13,41 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
     - uses: android-actions/setup-android@v3
-    - name: Create proper libbox.aar
+    - name: Create resources and libbox
       run: |
+        # Create libbox.aar
         mkdir -p /tmp/aar_build
         cd /tmp/aar_build
-        
-        # Create AndroidManifest.xml
         cat > AndroidManifest.xml << 'MANIFEST'
         <?xml version="1.0" encoding="utf-8"?>
         <manifest xmlns:android="http://schemas.android.com/apk/res/android"
             package="io.nekohasekai.sagernet.libbox">
         </manifest>
         MANIFEST
-        
-        # Create classes.jar (empty)
         mkdir -p META-INF
         echo "Manifest-Version: 1.0" > META-INF/MANIFEST.MF
         jar cf classes.jar META-INF
         rm -rf META-INF
-        
-        # Create R.txt (empty)
         touch R.txt
-        
-        # Create AAR
         zip -r libbox.aar AndroidManifest.xml classes.jar R.txt
-        
-        # Copy to project
         mkdir -p ${{ github.workspace }}/sing-box-android/app/libs
         cp libbox.aar ${{ github.workspace }}/sing-box-android/app/libs/
+        
+        # Create launcher icons
+        cd ${{ github.workspace }}/sing-box-android/app/src/main/res
+        
+        # Create mipmap directories
+        for density in mdpi hdpi xhdpi xxhdpi xxxhdpi; do
+          mkdir -p mipmap-$density
+          # Create simple PNG icon (1x1 pixel)
+          convert -size 48x48 xc:blue mipmap-$density/ic_launcher.png 2>/dev/null || \
+            printf '\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x02\x00\x00\x00\x90wS\xde\x00\x00\x00\x0cIDATx\x9cc\xf8\x0f\x00\x00\x01\x01\x00\x05\x18\xd8N\x00\x00\x00\x00IEND\xaeB\x60\x82' > mipmap-$density/ic_launcher.png
+          cp mipmap-$density/ic_launcher.png mipmap-$density/ic_launcher_round.png
+        done
+        
+        # Create drawable icon
+        mkdir -p drawable
+        printf '\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x02\x00\x00\x00\x90wS\xde\x00\x00\x00\x0cIDATx\x9cc\xf8\x0f\x00\x00\x01\x01\x00\x05\x18\xd8N\x00\x00\x00\x00IEND\xaeB\x60\x82' > drawable/ic_tile.png
     - name: Build APK
       run: |
         cd sing-box-android
