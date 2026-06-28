@@ -24,8 +24,8 @@ jobs:
     - name: Build APK
       run: |
         cd sing-box-android
-        gradle wrapper --gradle-version 8.2
-        ./gradlew assembleDebug assembleRelease --no-daemon
+        chmod +x gradlew
+        ./gradlew assembleDebug assembleRelease --no-daemon --stacktrace
     - uses: actions/upload-artifact@v4
       if: success()
       with:
