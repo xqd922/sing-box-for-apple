@@ -13,18 +13,21 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
     - uses: android-actions/setup-android@v3
-    - run: |
+    - name: Create dummy libbox.aar
+      run: |
         mkdir -p sing-box-android/app/libs
         cd sing-box-android/app/libs
         mkdir -p META-INF
         echo "Manifest-Version: 1.0" > META-INF/MANIFEST.MF
         zip -r libbox.aar META-INF
         rm -rf META-INF
-    - run: |
+    - name: Build APK
+      run: |
         cd sing-box-android
-        chmod +x gradlew
+        gradle wrapper --gradle-version 8.2
         ./gradlew assembleDebug assembleRelease --no-daemon
     - uses: actions/upload-artifact@v4
+      if: success()
       with:
         name: sing-box-apk
         path: |
