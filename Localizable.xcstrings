@@ -1775,6 +1775,34 @@
         }
       }
     },
+    "Configuration files may contain private content and should not be made public." : {
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "فایل‌های پیکربندی ممکن است حاوی محتوای خصوصی باشند و نباید عمومی شوند."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Файлы конфигурации могут содержать личные данные и не должны публиковаться."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "配置文件可能包含隐私内容，不应该被公开发布。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "配置檔案可能包含隱私內容，不應該被公開發佈。"
+          }
+        }
+      }
+    },
     "Configurations" : {
       "localizations" : {
         "fa" : {
@@ -6661,6 +6689,34 @@
         }
       }
     },
+    "Logs and configuration files may contain private content and should not be made public." : {
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "فایل‌های گزارش و پیکربندی ممکن است حاوی محتوای خصوصی باشند و نباید عمومی شوند."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Журналы и файлы конфигурации могут содержать личные данные и не должны публиковаться."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "日志和配置文件可能包含隐私内容，不应该被公开发布。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "日誌和配置檔案可能包含隱私內容，不應該被公開發佈。"
+          }
+        }
+      }
+    },
     "MagicDNS" : {
       "localizations" : {
         "fa" : {
@@ -9545,6 +9601,35 @@
         }
       }
     },
+    "Save With Configuration" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ذخیره با پیکربندی"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сохранить с конфигурацией"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "附带配置保存"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "附帶配置保存"
+          }
+        }
+      }
+    },
     "Scan QR Code" : {
       "localizations" : {
         "fa" : {
@@ -10134,6 +10219,7 @@
       }
     },
     "Share With Configuration" : {
+      "extractionState" : "stale",
       "localizations" : {
         "fa" : {
           "stringUnit" : {
@@ -12581,6 +12667,62 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "WiFi 狀態訪問"
+          }
+        }
+      }
+    },
+    "With Configuration" : {
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "همراه با پیکربندی"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "С конфигурацией"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "附带配置"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "附帶配置"
+          }
+        }
+      }
+    },
+    "With Log" : {
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "همراه با گزارش"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "С журналом"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "附带日志"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "附帶日誌"
           }
         }
       }
