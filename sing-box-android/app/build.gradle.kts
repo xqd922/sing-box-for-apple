@@ -20,6 +20,11 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        // Libbox configuration
+        ndk {
+            abiFilters += listOf("arm64-v8a", "armeabi-v7a", "x86_64", "x86")
+        }
     }
 
     buildTypes {
@@ -64,6 +69,9 @@ android {
 dependencies {
     implementation(project(":core"))
     implementation(project(":service"))
+
+    // Libbox (sing-box core)
+    implementation(files("libs/libbox.aar"))
 
     // Core Android
     implementation("androidx.core:core-ktx:1.12.0")
