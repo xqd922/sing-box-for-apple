@@ -13,19 +13,39 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
     - uses: android-actions/setup-android@v3
-    - name: Create dummy libbox.aar
+    - name: Create proper libbox.aar
       run: |
-        mkdir -p sing-box-android/app/libs
-        cd sing-box-android/app/libs
+        mkdir -p /tmp/aar_build
+        cd /tmp/aar_build
+        
+        # Create AndroidManifest.xml
+        cat > AndroidManifest.xml << 'MANIFEST'
+        <?xml version="1.0" encoding="utf-8"?>
+        <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+            package="io.nekohasekai.sagernet.libbox">
+        </manifest>
+        MANIFEST
+        
+        # Create classes.jar (empty)
         mkdir -p META-INF
         echo "Manifest-Version: 1.0" > META-INF/MANIFEST.MF
-        zip -r libbox.aar META-INF
+        jar cf classes.jar META-INF
         rm -rf META-INF
+        
+        # Create R.txt (empty)
+        touch R.txt
+        
+        # Create AAR
+        zip -r libbox.aar AndroidManifest.xml classes.jar R.txt
+        
+        # Copy to project
+        mkdir -p ${{ github.workspace }}/sing-box-android/app/libs
+        cp libbox.aar ${{ github.workspace }}/sing-box-android/app/libs/
     - name: Build APK
       run: |
         cd sing-box-android
         chmod +x gradlew
-        ./gradlew assembleDebug assembleRelease --no-daemon --stacktrace
+        ./gradlew assembleDebug assembleRelease --no-daemon
     - uses: actions/upload-artifact@v4
       if: success()
       with:
