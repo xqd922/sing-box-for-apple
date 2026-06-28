@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">sing-box</string>
+    <string name="tile_title">sing-box</string>
+
+    <!-- Main Navigation -->
+    <string name="nav_dashboard">Dashboard</string>
+    <string name="nav_logs">Logs</string>
+    <string name="nav_tools">Tools</string>
+    <string name="nav_settings">Settings</string>
+
+    <!-- Dashboard -->
+    <string name="status_stopped">Stopped</string>
+    <string name="status_starting">Starting</string>
+    <string name="status_started">Started</string>
+    <string name="status_stopping">Stopping</string>
+    <string name="status_reasserting">Reasserting</string>
+
+    <string name="profile">Profile</string>
+    <string name="connections">Connections</string>
+    <string name="upload">Upload</string>
+    <string name="download">Download</string>
+    <string name="clash_mode">Clash Mode</string>
+    <string name="http_proxy">HTTP Proxy</string>
+    <string name="install_profile">Install Profile</string>
+
+    <!-- Logs -->
+    <string name="search_logs">Search logs</string>
+    <string name="pause">Pause</string>
+    <string name="resume">Resume</string>
+    <string name="clear_logs">Clear Logs</string>
+    <string name="log_level">Log Level</string>
+    <string name="save">Save</string>
+    <string name="to_clipboard">To Clipboard</string>
+    <string name="to_file">To File</string>
+    <string name="share">Share</string>
+    <string name="empty_logs">Empty logs</string>
+    <string name="service_not_started">Service not started</string>
+    <string name="connecting">Connecting...</string>
+
+    <!-- Tools -->
+    <string name="endpoints">Endpoints</string>
+    <string name="services">Services</string>
+    <string name="network">Network</string>
+    <string name="network_quality">Network Quality</string>
+    <string name="stun_test">STUN Test</string>
+    <string name="debug">Debug</string>
+    <string name="crash_report">Crash Report</string>
+    <string name="oom_report">OOM Report</string>
+
+    <!-- Settings -->
+    <string name="app">App</string>
+    <string name="core">Core</string>
+    <string name="packet_tunnel">Packet Tunnel</string>
+    <string name="on_demand_rules">On Demand Rules</string>
+    <string name="profile_override">Profile Override</string>
+    <string name="remote_control">Remote Control</string>
+    <string name="sponsors">Sponsors</string>
+    <string name="about">About</string>
+    <string name="documentation">Documentation</string>
+    <string name="source_code">Source Code</string>
+    <string name="rate_app">Rate on the Play Store</string>
+    <string name="version">Version</string>
+
+    <!-- Actions -->
+    <string name="start">Start</string>
+    <string name="stop">Stop</string>
+    <string name="disconnect">Disconnect</string>
+    <string name="back">Back</string>
+    <string name="done">Done</string>
+    <string name="cancel">Cancel</string>
+    <string name="ok">OK</string>
+</resources>

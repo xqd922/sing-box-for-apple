@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Card dimensions -->
+    <dimen name="card_corner_radius">16dp</dimen>
+    <dimen name="card_padding">16dp</dimen>
+    <dimen name="card_spacing">12dp</dimen>
+
+    <!-- Status bar pill -->
+    <dimen name="pill_height">44dp</dimen>
+    <dimen name="pill_corner_radius">22dp</dimen>
+    <dimen name="pill_horizontal_padding">20dp</dimen>
+    <dimen name="pill_vertical_padding">8dp</dimen>
+
+    <!-- FAB button -->
+    <dimen name="fab_size">56dp</dimen>
+    <dimen name="fab_corner_radius">16dp</dimen>
+    <dimen name="fab_icon_size">22dp</dimen>
+
+    <!-- List items -->
+    <dimen name="list_item_height">44dp</dimen>
+    <dimen name="list_item_padding">16dp</dimen>
+    <dimen name="list_item_spacing">12dp</dimen>
+
+    <!-- Typography -->
+    <dimen name="title_font_size">17sp</dimen>
+    <dimen name="body_font_size">17sp</dimen>
+    <dimen name="caption_font_size">12sp</dimen>
+    <dimen name="footnote_font_size">13sp</dimen>
+</resources>
