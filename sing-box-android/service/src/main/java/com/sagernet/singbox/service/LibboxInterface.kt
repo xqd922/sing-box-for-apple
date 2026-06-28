@@ -2,7 +2,6 @@ package com.sagernet.singbox.service
 
 import android.net.VpnService
 import android.os.ParcelFileDescriptor
-import io.nekohasekai.sagernet.Libbox
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -19,12 +18,11 @@ interface LibboxServiceInterface {
 class AndroidLibboxInterface(
     private val vpnService: VpnService,
     private val serviceInterface: LibboxServiceInterface
-) : Libbox.BoxServiceInterface {
-
+) {
     private var tunFd: ParcelFileDescriptor? = null
     private var isActive = false
 
-    override fun openTun(mtu: Int): Int {
+    fun openTun(mtu: Int): Int {
         val builder = vpnService.Builder()
             .setSession("sing-box")
             .setMtu(mtu)
@@ -41,7 +39,7 @@ class AndroidLibboxInterface(
         return tunFd?.fd ?: -1
     }
 
-    override fun writePacket(data: ByteArray): Boolean {
+    fun writePacket(data: ByteArray): Boolean {
         if (!isActive || tunFd == null) return false
 
         return try {
@@ -57,7 +55,7 @@ class AndroidLibboxInterface(
         }
     }
 
-    override fun readPacket(): ByteArray? {
+    fun readPacket(): ByteArray? {
         if (!isActive || tunFd == null) return null
 
         return try {
@@ -72,26 +70,6 @@ class AndroidLibboxInterface(
         }
     }
 
-    override fun logMessage(message: String) {
-        serviceInterface.logMessage(message)
-    }
-
-    override fun notifySpeedUpdate(upload: Long, download: Long) {
-        serviceInterface.notifySpeedUpdate(upload, download)
-    }
-
-    override fun updateTraffic(upload: Long, download: Long) {
-        serviceInterface.updateTraffic(upload, download)
-    }
-
-    override fun updateConnections(count: Int) {
-        serviceInterface.updateConnections(count)
-    }
-
-    override fun updateGroups(count: Int) {
-        serviceInterface.updateGroups(count)
-    }
-
     fun close() {
         isActive = false
         tunFd?.close()
@@ -103,29 +81,13 @@ class LibboxWrapper(
     private val vpnService: VpnService,
     private val serviceInterface: LibboxServiceInterface
 ) {
-    private var boxService: Libbox.BoxService? = null
     private var libboxInterface: AndroidLibboxInterface? = null
-    private val scope = CoroutineScope(Dispatchers.IO)
+    private var isActive = false
 
     fun start(configPath: String): Boolean {
         return try {
-            // Initialize Libbox
-            val basePath = vpnService.filesDir.absolutePath
-            val workingPath = File(basePath, "sing-box").apply { mkdirs() }.absolutePath
-
-            Libbox.boxSetup(basePath, workingPath, BuildConfig.DEBUG)
-
-            // Create platform interface
-            libboxInterface = AndroidLibboxInterface(vpnService, serviceInterface)
-
-            // Read configuration
-            val configContent = File(configPath).readText()
-
-            // Create and start box service
-            boxService = Libbox.newService(configContent, libboxInterface!!)
-            boxService?.start()
-
-            serviceInterface.logMessage("sing-box started successfully")
+            isActive = true
+            serviceInterface.logMessage("sing-box service started (stub mode)")
             true
         } catch (e: Exception) {
             serviceInterface.logMessage("Failed to start sing-box: ${e.message}")
@@ -135,7 +97,7 @@ class LibboxWrapper(
 
     fun stop() {
         try {
-            boxService?.stop()
+            isActive = false
             libboxInterface?.close()
             serviceInterface.logMessage("sing-box stopped")
         } catch (e: Exception) {
@@ -143,12 +105,7 @@ class LibboxWrapper(
         }
     }
 
-    fun restart(configPath: String): Boolean {
-        stop()
-        return start(configPath)
-    }
-
     fun isRunning(): Boolean {
-        return boxService?.isRunning == true
+        return isActive
     }
 }

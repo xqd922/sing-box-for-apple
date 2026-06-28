@@ -10,7 +10,6 @@ import android.net.VpnService
 import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
-import com.sagernet.singbox.MainActivity
 import kotlinx.coroutines.*
 
 class SingBoxVpnService : VpnService(), LibboxServiceInterface {
@@ -189,10 +188,12 @@ class SingBoxVpnService : VpnService(), LibboxServiceInterface {
     }
 
     private fun createNotification(text: String): Notification {
+        // Create an intent to launch the main app
+        val launchIntent = packageManager.getLaunchIntentForPackage(packageName)
         val pendingIntent = PendingIntent.getActivity(
             this,
             0,
-            Intent(this, MainActivity::class.java),
+            launchIntent,
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
 
