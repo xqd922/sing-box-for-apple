@@ -68,6 +68,10 @@ service/
 
 # Clean build
 ./gradlew clean
+
+# Windows one-command release flow
+# (requires JDK17 + Android SDK configured)
+.\release.ps1
 ```
 
 ## Project Structure
